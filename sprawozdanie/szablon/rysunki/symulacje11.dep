@@ -1,0 +1,11 @@
+symulacje11.pdf: symulacje11/u_lambda_0_1.txt
+symulacje11.pdf: symulacje11/u_lambda_0_2.txt
+symulacje11.pdf: symulacje11/u_lambda_0_5.txt
+symulacje11.pdf: symulacje11/u_lambda_1.txt
+symulacje11.pdf: symulacje11/u_lambda_2.txt
+symulacje11.pdf: symulacje11/yzad.txt
+symulacje11.pdf: symulacje11/y_lambda_0_1.txt
+symulacje11.pdf: symulacje11/y_lambda_0_2.txt
+symulacje11.pdf: symulacje11/y_lambda_0_5.txt
+symulacje11.pdf: symulacje11/y_lambda_1.txt
+symulacje11.pdf: symulacje11/y_lambda_2.txt

@@ -1,0 +1,2 @@
+funkcje.pdf: ../dane_stat/dane_fx.txt
+funkcje.pdf: ../dane_stat/dane_gx.txt

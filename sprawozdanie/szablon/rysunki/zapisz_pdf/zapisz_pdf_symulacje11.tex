@@ -1,0 +1,61 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage{pgfplots}
+\usetikzlibrary{pgfplots.groupplots}
+\pgfplotsset{compat=1.11}
+\usepgfplotslibrary{external}
+\tikzexternalize
+
+\textwidth 160mm \textheight 247mm
+
+\pgfplotsset{width=\figurewidth,compat=1.11}
+\pgfplotsset{
+tick label style={font=\tiny},
+label style={font=\footnotesize},
+legend style={font=\footnotesize},
+title style={font=\footnotesize}
+}
+
+\newcommand{\szer}{16cm}
+\newcommand{\wys}{5.6cm}
+\newcommand{\odstepionowy}{1.2cm}
+
+\definecolor{kolor4}{rgb}{0,0,0.1724}
+\definecolor{kolor5}{rgb}{1.0000,0.1034,0.7241}
+\definecolor{kolor6}{rgb}{1.0000,0.8276,0}
+
+\begin{document}
+
+\tikzsetnextfilename{}
+
+\begin{figure}[tb]
+\tikzsetnextfilename{symulacje11}
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=1 by 2,vertical sep=\odstepionowy},width=\szer,height=\wys]
+%%1
+\nextgroupplot
+[xmin=0,xmax=1,ymin=-4.5,ymax=8.5,
+xtick={0,0.2,0.4,0.6,0.8,1},ytick={-4,-2,0,2,4,6,8},
+xlabel=$t \ (\mathrm{s})$,ylabel=$u$,legend cell align=left,legend pos=north east]
+\addplot[const plot,color=blue,semithick] file {../symulacje11/u_lambda_0_1.txt};
+\addplot[const plot,color=red,semithick,densely dashed] file {../symulacje11/u_lambda_0_2.txt};
+\addplot[const plot,color=green,semithick,densely dashdotted] file {../symulacje11/u_lambda_0_5.txt};
+\addplot[const plot,color=kolor4,semithick,densely dashdotdotted] file {../symulacje11/u_lambda_1.txt};
+\addplot[const plot,color=kolor5,semithick,densely dotted] file {../symulacje11/u_lambda_2.txt};
+\legend{$\lambda=0.1$,$\lambda=0.2$,$\lambda=0.5$,$\lambda=1$,$\lambda=2$}
+%%2
+\nextgroupplot
+[xmin=0,xmax=1,ymin=-1.25,ymax=2.25,
+xtick={0,0.2,0.4,0.6,0.8,1},ytick={-1,-0.5,0,0.5,1,1.5,2},
+xlabel=$t \ (\mathrm{s})$,ylabel={$y^{\mathrm{zad}}, \ y$},legend cell align=left,legend style={at={(axis cs:0.6,-0.3)},anchor=south west}]
+\addplot[const plot,color=gray,thick] file {../symulacje11/yzad.txt};
+\addplot[color=blue,semithick] file {../symulacje11/y_lambda_0_1.txt};
+\addplot[const plot,color=red,semithick,densely dashed] file {../symulacje11/y_lambda_0_2.txt};
+\addplot[const plot,color=green,semithick,densely dashdotted] file {../symulacje11/y_lambda_0_5.txt};
+\addplot[const plot,color=kolor4,semithick,densely dashdotdotted] file {../symulacje11/y_lambda_1.txt};
+\addplot[const plot,color=kolor5,semithick,densely dotted] file {../symulacje11/y_lambda_2.txt};
+\legend{$y^{\mathrm{zad}}$,$\lambda=0.1$,$\lambda=0.2$,$\lambda=0.5$,$\lambda=1$,$\lambda=2$}
+\end{groupplot}
+\end{tikzpicture}
+\end{figure}
+
+\end{document}

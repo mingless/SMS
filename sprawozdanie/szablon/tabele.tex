@@ -1,0 +1,98 @@
+\chapter{Tabele}
+W~praktyce bardzo często należy wyrównać liczby względem cyfr znaczących w~poszczególnych kolumnach (czyli przecinek dziesiętny ma być we wszystkich wierszach tabeli umieszczony w~tym samym miejscu w~pionie). Do wyrównania liczb można wykorzystać pakiet \verb+siunitx+ (pakiety \verb+rccol+ oraz \verb+dcolumn+ mają mniejsze możliwości). Kod źródłowy służący do otrzymania tab.~\ref{t_wyrownanie_do_znaku_przecinek1} jest następujący:
+\begin{lstlisting}[style=customlatex,frame=single]
+\begin{table}
+ [b] \caption{Tabela z~wyrównaniem liczb do znaku przecinka dziesiętnego}
+ \label{t_wyrownanie_do_znaku_przecinek1}
+ \centering
+ \sisetup{table-format = 2.4}
+ \begin{small}
+  \begin{tabular}{|l|S[table-format=2]|S|S|S|}
+   \hline
+    \multicolumn{1}{|c|}{Model\rule{0pt}{3.5mm}} & LP & $\mathrm{SSE_{ucz}}$ 
+		 & $\mathrm{SSE_{wer}}$ & $\mathrm{SSE_{test}}$ \\ \hline
+    Liniowy \rule{0pt}{3.5mm} & 4 & 90.1815 & 70.7787 & \textemdash \\
+    Neuronowy, $K=1$ & 7 & 10.1649 & 10.3895 & \textemdash \\
+    Neuronowy, $K=2$ & 13 & 0.3282 & 0.3257  & \textemdash \\
+    Neuronowy, $K=3$ & 19 & 0.2014 & 0.1827  & 0.1468 \\
+    Neuronowy, $K=4$ & 25 & 0.1987 & 0.1906 & \textemdash \\
+    Neuronowy, $K=5$ & 31 & 0.1364 & 0.1971 & \textemdash \\
+    Neuronowy, $K=6$ & 37 & 0.1340 & 0.2044 & \textemdash \\
+    \hline
+  \end{tabular}
+ \end{small}
+\end{table}
+\end{lstlisting}
+Zwróćmy uwagę, że metoda ta działa również wówczas, gdy stosuje się notację wykładniczą, co demonstruje tab.~\ref{t_wyrownanie_do_znaku_przecinek2}. Polecenie \verb+\multicolumn+ wyśrodkowuje nagłówki tabeli.
+
+Jeżeli standardowa szerokość kolumn jest za mała, należy w~dowolnym wierszu wstawić z~obu stron zawartości komórki polecenia \verb+\hspace{odległość}+, które zapewniają odpowiednią szerokość. Modyfikację taką zastosowano w~drugiej kolumnie tab.~\ref{t_wyrownanie_do_znaku_przecinek2}.
+
+Jeżeli tabela jest szersza niż szerokość strony, należy zastosować otoczenie \verb+sidewaystable+ z~pakietu \verb+rotating+, co wykorzystano w~tab.~\ref{t_wyrownanie_do_znaku_przecinek3}.
+
+W~zamieszczonych tabelkach wykorzystano polecenie \verb+\rule+ do wstawienia linii o~zerowej szerokości do wierszy tabelek, które są zbyt wąskie.
+
+\begin{table}
+	[b] \caption{Tabela z~wyrównaniem liczb do znaku przecinka dziesiętnego}
+	\label{t_wyrownanie_do_znaku_przecinek1}
+	\centering
+	\sisetup{table-format = 2.4}
+	\begin{small}
+		\begin{tabular}{|l|S[table-format=2]|S|S|S|}
+			\hline
+			\multicolumn{1}{|c|}{Model\rule{0pt}{3.5mm}} & LP & $\mathrm{SSE_{ucz}}$ & $\mathrm{SSE_{wer}}$ & $\mathrm{SSE_{test}}$ \\ \hline
+			Liniowy \rule{0pt}{3.5mm}                    &  4 & 90.1815              & 70.7787              & \textemdash         \\
+			Neuronowy, $K=1$                             &  7 & 10.1649              & 10.3895              & \textemdash         \\
+			Neuronowy, $K=2$                             & 13 & 0.3282               & 0.3257               & \textemdash         \\
+			Neuronowy, $K=3$                             & 19 & 0.2014               & 0.1827               & 0.1468                \\
+			Neuronowy, $K=4$                             & 25 & 0.1987               & 0.1906               & \textemdash         \\
+			Neuronowy, $K=5$                             & 31 & 0.1364               & 0.1971               & \textemdash         \\
+			Neuronowy, $K=6$                             & 37 & 0.1340               & 0.2044               & \textemdash         \\ \hline
+		\end{tabular}
+	\end{small}
+\end{table}
+
+
+\begin{table}
+	[b] \caption{Tabela z~wyrównaniem liczb do znaku przecinka dziesiętnego i~notacją wykładniczą}
+	\label{t_wyrownanie_do_znaku_przecinek2}
+	\centering
+	\sisetup{table-format = 1.4e-1}
+	\begin{small}
+		\begin{tabular}{|l|S[table-format=2]|S|S|S|}
+			\hline
+			\multicolumn{1}{|c|}{Model\rule{0pt}{3.5mm}} & \hspace{0.5cm} LP \hspace{0.5cm} & $\mathrm{SSE_{ucz}}$ & $\mathrm{SSE_{wer}}$ & $\mathrm{SSE_{test}}$ \\ \hline
+			Liniowy\rule{0pt}{3.5mm} &  4 & 9.1815e1  & 7.7787e1  & \textemdash\\
+			Neuronowy, $K=1$         &  7 & 1.1649e1  & 1.3895e1  & \textemdash\\
+			Neuronowy, $K=2$         & 13 & 3.2821e-1 & 3.2568e-1 & \textemdash\\
+			Neuronowy, $K=3$         & 19 & 2.0137e-1 & 1.8273e-1 & 1.4682e-1\\
+			Neuronowy, $K=4$         & 25 & 1.9868e-1 & 1.9063e-1 & \textemdash\\
+			Neuronowy, $K=5$         & 31 & 1.3642e-1 & 1.9712e-1 & \textemdash\\
+			Neuronowy, $K=6$         & 37 & 1.3404e-1 & 2.0440e-1 & \textemdash\\ \hline
+		\end{tabular}
+	\end{small}
+\end{table}
+
+\begin{sidewaystable}
+	[b] \caption{Tabela obrócona o~$90^{\circ}$}
+	\label{t_wyrownanie_do_znaku_przecinek3}
+	\centering
+	\sisetup{table-auto-round=true}
+	\begin{small}
+		\begin{tabular}{|l|S[table-format=2]|S[table-format=1.2]|S[table-format=1.2]|S[table-format=2.2]|S[table-format=2.2]|S[table-format=2.2]|S[table-format=3.2]|S[table-format=3.2]|S[table-format=3.2]|S[table-format=3.2]|}
+			\hline
+			\multicolumn{1}{|c|}{Algorytm\rule{0pt}{3.25mm}} & $N$ & ${N_{\mathrm{u}}=1}$ & ${N_{\mathrm{u}}=2}$ &
+			${N_{\mathrm{u}}=3}$ &
+			${N_{\mathrm{u}}=4}$ &
+			${N_{\mathrm{u}}=5}$ &
+			${N_{\mathrm{u}}=10}$ &
+			${N_{\mathrm{u}}=15}$ &
+			${N_{\mathrm{u}}=20}$ &
+			${N_{\mathrm{u}}=30}$\\
+			\hline
+			NPL\rule{0pt}{3.5mm} & \phantom{0}5 & 0.3954 & 0.5326 & 0.8482 & 1.2868 & 1.9179 & \textemdash & \textemdash & \textemdash & \textemdash\\
+			NO & \phantom{0}5 & 2.6129 & 5.0372 & 8.0029 & 12.6476 & 18.3668 & \textemdash & \textemdash & \textemdash & \textemdash\\
+			NO$_{\mathrm{apr}}$\rule[-1.5mm]{0pt}{3.5mm} & \phantom{0}5 & 2.4654 &  4.3206 & 7.9801 & 15.2479 & 26.5298 & \textemdash & \textemdash & \textemdash & \textemdash\\
+			\hline
+		\end{tabular}
+	\end{small}
+\end{sidewaystable}

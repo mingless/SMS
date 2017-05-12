@@ -1,0 +1,42 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage{pgfplots}
+\usetikzlibrary{pgfplots.groupplots}
+\pgfplotsset{compat=1.11}
+\usepgfplotslibrary{external}
+\tikzexternalize
+
+\textwidth 160mm \textheight 247mm
+
+\pgfplotsset{width=\figurewidth,compat=1.11}
+\pgfplotsset{
+tick label style={font=\tiny},
+label style={font=\footnotesize},
+legend style={font=\footnotesize},
+title style={font=\footnotesize}
+}
+
+\begin{document}
+
+\tikzsetnextfilename{}
+
+\begin{figure}[tb]
+\tikzsetnextfilename{funkcje}
+\begin{tikzpicture}
+\begin{axis}[
+width=0.5\textwidth,
+xmin=-10,xmax=10,ymin=-1000,ymax=1000,
+xlabel={$x$},
+ylabel={$f(x), \ g(x)$},
+xtick={-10,-5,0,5,10},
+ytick={-1000,-500,0,500,1000},
+legend pos=south east,
+y tick label style={/pgf/number format/1000 sep=},
+]
+\addplot[red,semithick] file {../dane_stat/dane_fx.txt};
+\addplot[blue,semithick,densely dashed] file {../dane_stat/dane_gx.txt};
+\legend{$f(x)$,$g(x)$}
+\end{axis}
+\end{tikzpicture}
+\end{figure}
+
+\end{document}

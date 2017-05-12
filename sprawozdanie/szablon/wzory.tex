@@ -1,0 +1,109 @@
+\chapter{Wzory matematyczne}
+Stosujemy przecinek dziesiętny, a~nie kropkę dziesiętną. Aby uniknąć dodatkowego odstępu, stosujemy pakiet \verb+siunitx+, umożliwiający zapis \verb+\num{1,2345}+ lub \verb+\num{1.2345}+, co prowadzi do \num{1,2345}, a~nie \verb+$1,2345$+, co prowadzi do $1,2345$. Stosujemy zapis \num{1.2345e10}, a~nie $1{,}2345\times 10^{10}$. Powyższy zapis można stosować również w trybie matematycznym, np. \verb+$\num{1.2345e10}$+ skompiluje się do $\num{1.2345e10}$.
+
+\section{Stałe i~zmienne, indeksowanie}
+Skalarne stałe i~zmienne zapisujemy w~trybie matematycznym, np. $x$, $y$, $z$. Stosujemy indeksy dolne, np. $x_i$, górne, np. $x^j$, lub oba, np. $x_i^j$. Można również zastosować indeksy w~nawiasach, np. $y(k)$. Jeżeli indeks zapisany jest czcionką pochyłą, spodziewamy się, że przyjmuje on wartość liczbową (liczby naturalne), np. $x_i$ dla $i=1,\ldots,10$. Jeżeli natomiast zastosujemy oznaczenie $x_{\mathrm{i}}$, to wówczas indeks $\mathrm{i}$ nie przyjmuje żadnej wartości, jest on integralną częścią zmiennej lub stałej. Dlatego oznaczając horyzont sterowania stosujemy symbol $N_{\mathrm{u}}$, a~nie $N_u$, co by sugerowało, że indeks $u$ przyjmuje pewne wartości z zakresu liczb naturalnych. Analogicznie, stała czasowa całkowania oznaczana jest jako $T_{\mathrm{i}}$, a~nie jako $T_i$, stała czasowa różniczkowania to $T_{\mathrm{d}}$, a nie $T_d$. Sygnał wartości zadanej oznaczamy przez $y^{\mathrm{zad}}$, a~nie przez $y^{zad}$.
+
+Nie należy stosować czcionki pochyłej również do tekstów, które uzupełniają wyrażenia matematyczne, np. zamiast błędnej postaci
+\begin{equation}
+y(x)=
+\begin{cases}
+x^2 & gdy \ x\le 0\\
+x^3 & gdy \ x>0
+\end{cases}
+\nonumber
+\end{equation}
+powinno być
+\begin{equation}
+y(x)=
+\begin{cases}
+x^2 & \textrm{gdy } x\le 0\\
+x^3 & \textrm{gdy } x>0
+\end{cases}
+\nonumber
+\end{equation}
+Odstępy w trybie matematycznym wymuszamy za pomocą instrukcji \verb+\+, \verb+\quad+, \verb+\qquad+ itd.
+
+\section{Wektory}
+Do oznaczenia wektorów najczęściej stosujemy symbole pogrubione, np. $\boldsymbol{x}$, $\triangle\boldsymbol{u}(k)$. Pamiętamy, że w matematyce wektory zawsze są pionowe. Wektory, których elementami są skalary, zapisujemy więc jako
+\begin{equation}
+\triangle\boldsymbol{u}(k)=\left[\triangle u(k|k) \ \ldots \ \triangle u(k+N_{\mathrm{u}}-1|k) \right]^{\mathrm{T}}
+\end{equation}
+lub w~postaci
+\begin{equation}
+\triangle\boldsymbol{u}(k)=\left[
+\begin{array}{c}
+\triangle u(k|k)\\
+\vdots\\
+\triangle u(k+N_{\mathrm{u}}-1|k)
+\end{array}
+\right]
+\label{w_dUk}
+\end{equation}
+Jeżeli używamy wektorów, których elementami składowymi są inne wektory, najwygodniej zapisać je pionowo. Np. elementami wektora (\ref{w_dUk}) są podwektory
+\begin{equation}
+\triangle u(k+p|k)=\left[
+\begin{array}{c}
+\triangle u_1(k+p|k)\\
+\vdots\\
+\triangle u_{n_{\mathrm{u}}}(k+p|k)
+\end{array}
+\right]
+\label{w_dukp}
+\end{equation}
+gdzie $p=1,\ldots,N_{\mathrm{u}}$. A więc każdy z~wektorów (\ref{w_dukp}) ma długość $n_{\mathrm{u}}$, wektor (\ref{w_dUk}) ma długość $n_{\mathrm{u}}N_{\mathrm{u}}$.
+
+\section{Macierze}
+Do oznaczenia macierzy najczęściej stosujemy symbole pogrubione, np. macierz dynamiczna w~algorytmie DMC dla procesu o~jednym wejściu i~jednym wyjściu ma wymiar $N \times N_{\mathrm{u}}$ i strukturę
+\begin{equation}
+\boldsymbol{G}=\left[
+\begin{array}
+{cccc}
+s_{1} & 0 & \ldots & 0\\
+s_{2} & s_{1} & \ldots & 0\\
+\vdots & \vdots & \ddots & \vdots\\
+s_{N} & s_{N-1} & \ldots &  s_{N-N_{\mathrm{u}}+1}
+\end{array}
+\right]
+\end{equation}
+W~przypadku procesu o~$n_{\mathrm{u}}$ wejściach i~$n_{\mathrm{y}}$ wyjściach ma ona  wymiar $N\times N_{\mathrm{u}}$ i postać
+\begin{equation}
+\boldsymbol{G}=\left[
+\begin{array}
+{cccc}
+\boldsymbol{S}_{1} & \boldsymbol{0}_{n_{\mathrm{y}}\times n_{\mathrm{u}}} & \ldots & \boldsymbol{0}_{n_{\mathrm{y}}\times n_{\mathrm{u}}}\\
+\boldsymbol{S}_{2} & \boldsymbol{S}_{1} & \ldots & \boldsymbol{0}_{n_{\mathrm{y}}\times n_{\mathrm{u}}}\\
+\vdots & \vdots & \ddots & \vdots\\
+\boldsymbol{S}_{N} & \boldsymbol{S}_{N-1} & \ldots &  \boldsymbol{S}_{N-N_{\mathrm{u}}+1}%
+\end{array}
+\right]
+\label{w_G}
+\end{equation}
+gdzie każda z~macierzy składowych ma wymiar $n_{\mathrm{y}}\times n_{\mathrm{u}}$
+\begin{equation}
+\boldsymbol{S}_p=\left[
+\begin{array}
+{ccc}
+s_p^{1,1} & \ldots & s_p^{1,n_{\mathrm{u}}}\\
+\vdots & \ddots & \vdots\\
+s_p^{n_{\mathrm{y}},1} & \ldots & s_p^{n_{\mathrm{y}},n_{\mathrm{u}}}
+\end{array}
+\right]
+\end{equation}
+gdzie $p=1,\ldots,N$. A~więc macierz (\ref{w_G}) ma wymiar $n_{\mathrm{y}}N\times n_{\mathrm{u}}N_{\mathrm{u}}$.
+
+\section{Większe wyrażenia matematyczne}
+W~przypadku długich wzorów nie należy korzystać z~otoczenia \verb+equation+, ponieważ wzór taki zwykle nie~mieści się na stronie o przyjętej szerokości, np.
+\begin{equation}
+y(k)=b_1u(k-1)+b_2u(k-2)+b_3u(k-3)+b_4u(k-4)+b_5u(k-5)-a_1y(k-1)-a_2y(k-2)-a_3y(k-3)-a_4y(k-4)-a_5y(k-5)
+\end{equation}
+Należy zastosować otoczenie \verb+align+, co prowadzi do wzoru
+\begin{align}
+y(k)&=b_1u(k-1)+b_2u(k-2)+b_3u(k-3)+b_4u(k-4)+b_5u(k-5)\nonumber\\
+&\quad -a_1y(k-1)-a_2y(k-2)-a_3y(k-3)-a_4y(k-4)-a_5y(k-5)\label{w_yk}
+\end{align}
+Nie stosujemy otoczenia \verb+split+ z~powodu błędnego centrowania. Numer wzoru złożonego z~wielu wierszy umieszczamy tylko w~ostatnim wierszu.
+
+
+
+

@@ -1,0 +1,63 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage{pgfplots}
+\usetikzlibrary{pgfplots.groupplots}
+\pgfplotsset{compat=1.11}
+\usepgfplotslibrary{external}
+\tikzexternalize
+
+\textwidth 160mm \textheight 247mm
+
+\pgfplotsset{width=\figurewidth,compat=1.11}
+\pgfplotsset{
+tick label style={font=\tiny},
+label style={font=\footnotesize},
+legend style={font=\footnotesize},
+title style={font=\footnotesize}
+}
+
+\newcommand{\szer}{8cm}
+\newcommand{\wys}{5.6cm}
+\newcommand{\odstepionowy}{1.2cm}
+\newcommand{\odstepoziomy}{1.9cm}
+
+\begin{document}
+
+\tikzsetnextfilename{}
+
+\begin{figure}[tb]
+\tikzsetnextfilename{symulacje22_wersja2}
+\begin{tikzpicture}
+\begin{groupplot}[group style={group size=2 by 2,horizontal sep=\odstepoziomy,vertical sep=\odstepionowy},width=\szer,height=\wys]
+%%1
+\nextgroupplot
+[xmin=0,xmax=1,ymin=-0.1,ymax=3,
+xtick={0,0.2,0.4,0.6,0.8,1},ytick={0,1,2,3},
+xlabel=$t \ (\mathrm{s})$,ylabel=$u_1$,legend cell align=left,legend pos=north east]
+\addplot[const plot,color=blue,semithick] file {../symulacje22/u1.txt};
+%%2
+\nextgroupplot
+[xmin=0,xmax=1,ymin=-0.25,ymax=1.5,
+xtick={0,0.2,0.4,0.6,0.8,1},ytick={0,0.5,1,1.5},
+xlabel=$t \ (\mathrm{s})$,ylabel={$y_1^{\mathrm{zad}}, \ y_1$},legend cell align=left,legend pos=south east]
+\addplot[const plot,color=gray,thick] file {../symulacje22/yzad1.txt};
+\addplot[color=blue,semithick] file {../symulacje22/y1.txt};
+\legend{$y_1^{\mathrm{zad}}$,$y_1$}
+%%3
+\nextgroupplot
+[xmin=0,xmax=1,ymin=-0.5,ymax=1.5,
+xtick={0,0.2,0.4,0.6,0.8,1},ytick={-0.5,0,0.5,1,1.5},
+xlabel=$t \ (\mathrm{s})$,ylabel=$u_2$,legend cell align=left,legend pos=north east]
+\addplot[const plot,color=blue,semithick] file {../symulacje22/u2.txt};
+%%4
+\nextgroupplot
+[xmin=0,xmax=1,ymin=-0.25,ymax=1.5,
+xtick={0,0.2,0.4,0.6,0.8,1},ytick={0,0.5,1,1.5},
+xlabel=$t \ (\mathrm{s})$,ylabel={$y_2^{\mathrm{zad}}, \ y_2$},legend cell align=left,legend pos=south east]
+\addplot[const plot,color=gray,thick] file {../symulacje22/yzad2.txt};
+\addplot[color=blue,semithick] file {../symulacje22/y2.txt};
+\legend{$y_2^{\mathrm{zad}}$,$y_2$}
+\end{groupplot}
+\end{tikzpicture}
+\end{figure}
+
+\end{document}
