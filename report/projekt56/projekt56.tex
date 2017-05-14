@@ -5,70 +5,90 @@ Pobieranie odpowiedzi obiektu było wykonywane za pomocą skryptu z pliku \verb|
 
 \chapter{Algorytm PID}
 
-%TODO
+\section{Metoda Zieglera-Nicholsa}
+Wyznaczenie nastaw metodą Zieglera-Nicholsa rozpoczęto dobraniem wzmocnienia K regulatora P tak aby uzyskać niegasnące oscylacje krytyczne. Uzyskane oscylacje przedstawiono na rys. \ref{R1}, uzyskano je dla wzmocnienia krytycznego $K_u = 25$, a ich okres to po zaokrągleniu $T_u = 0.4$. Na podstawie tych wartości oraz wartości z tabelki zamieszczonej w skrypcie dla regulatora PID otrzymujemy regulator, którego działanie przedstawiono na rys. \ref{R2}.
 
-Napisać coś o różnicy w taktowaniu.
+Warto tu także wspomnieć, że obserwowane oscylacje krytyczne nie mają stałej amplitudy, w czasie laboratorium ustalono, że wynika to z różnicy między okresem próbkowania regulatora i symulacji, która powoduje nałożenie się dwóch funkcji.
+
 \begin{figure}[H]
 \centering
 \input{im/PID_osc_kryt.tex}
+\label{R1}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \input{im/PID_1.tex}
+\label{R2}
 \end{figure}
 
-Tu wspomnieć, że P to osc kryt.
+\section{Metoda ``inżynierska''}
+Wyznaczenie nastaw metodą ``inżynierską'' zaczyna się od tego samego regulatora P co w poprzedniej sekcji, stąd nie ma potrzeby ponownego wyznaczania wzmocnienia krytycznego. W następnym dobierany jest parametr $T_\mathrm{I}$ regulatora PI, zaś wzmocnienie ustawia się jako $K = \num{0.5}K_u$. Jako kryterium doboru parametru $T_\mathrm{I}$ początkowo wybrano minimalny czas ustalenia sygnału wyjściowego jednakże ze względu na późniejsze przebiegi późniejszych regulatorów PID wybór ten został zmieniony i zamiast $T_\mathrm{I} = 6$ wybrano $T_\mathrm{I} = 5$. Tym samym rozpoczęto dobór parametru $T_\mathrm{D}$. Parametr ten dobierany był na podstawie miary błędu średniokwadratowego wartości wyjścia do wartości zadanej. Warto tu także zauważyć, że aby uniknąć ``obijania'' się o ograniczenia dobór nastaw przeprowadzany był dla bardzo niskiej wartości zadanej co wiązało się z istotnym szumem, stąd też pod uwagę brana była także subiektywna ocena jakości przebiegu ze względu na niepewność wskaźnika jakości. Ostateczne nastawy zostaną jeszcze później sprawdzone dla skoków wartości zadanej o większej amplitudzie. Przebiegi dla kolejnych regulatorów wraz z ich parametrami zamieszczono na rys. (\ref{3}--\ref{10}).
+
 \begin{figure}[H]
 \centering
 \input{im/PI_inz_1.tex}
+\label{R3}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \input{im/PI_inz_2.tex}
+\label{R4}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \input{im/PI_inz_3.tex}
+\label{R5}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \input{im/PI_inz_4.tex}
+\label{R6}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \input{im/PI_inz_5.tex}
+\label{R7}
 \end{figure}
 
 
 \begin{figure}[H]
 \centering
 \input{im/PID_inz_1.tex}
+\label{R8}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \input{im/PID_inz_2.tex}
+\label{R9}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \input{im/PID_inz_3.tex}
+\label{R10}
 \end{figure}
 
+\section{Algorytm \textit{anti-windup}}
+Po przeprowadzeniu doboru nastaw metodami przedstawionymi w poprzednich sekcjach dokonano eksperymentów sprawdzających działanie algorytmu \textit{anti-windup}. W tym momencie zdecydowano się na wybór nastaw uzyskanych metodą Zieglera-Nicholsa ze względu na uzyskanie niższych wartości wskaźnika jakości, różnica ta była jednak w granicach wpływu szumu na wskaźnik jakości, więc wybór ten nie był tutaj nazbyt istotny.
+
+Po konsultacji z prowadzącym przeprowadzono eksperymenty wpływu algorytmu na trajektorię dla dwóch wartości parametru $T_\mathrm{v} = \{10, 20\}$. Na podstawie przebiegów widocznych na rys. \ref{R11} i \ref{R12} możemy zauważyć, że przy wysokim stosunku szumu do sygnału algorytm ``anti-windup'' jest wrażliwy na szum i powoduje pogorszenie jakości przebiegu. Jednakże jak zostanie później zademonstrowane dla przebiegów, w których stosunek szumu do sygnału nie jest aż tak wysoki algorytm może pozwolić na uzyskanie pożądanych zmian w działaniu regulatora.
 
 \begin{figure}[H]
 \centering
 \input{im/PID_aw.tex}
+\label{R11}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \input{im/PID_aw_2.tex}
+\label{R12}
 \end{figure}
 
 
@@ -80,17 +100,17 @@ Odpowiedź skokową uzyskano poprzez zmierzenie odpowiedzi układu na skok sygna
 
 
 \begin{figure}[H]
-	\centering
-	\input{im/step_400.tex}
-	\caption{Odpowiedź skokowa układu}
-	\label{DMC1}
+\centering
+\input{im/step_400.tex}
+\caption{Odpowiedź skokowa układu}
+\label{DMC1}
 \end{figure}
 
 \begin{figure}[H]
-	\centering
-	\input{im/step.tex}
-	\caption{Obcięta odpowiedź skokowa układu}
-	\label{DMC2}
+\centering
+\input{im/step.tex}
+\caption{Obcięta odpowiedź skokowa układu}
+\label{DMC2}
 \end{figure}
 
 Skrypt, którego użyto do wyliczenia macierzy DMC zawarto w pliku \verb|params.m|:
@@ -123,7 +143,7 @@ for i=1:N
       Mp(i,j)=s(i+j)-s(j);
     else
       Mp(i,j)=s(D)-s(j);
-    end;      
+    end;
   end;
 end;
 
@@ -136,7 +156,7 @@ Ke=sum(K(1,:));
 fprintf(strcat('  static float Ke = ',sprintf('%.4f',Ke),';\n',...
 '  static float Ku[] = {',sprintf('%.4f,',Ku),'\b};\n'));
 
-\end{lstlisting} 
+\end{lstlisting}
 
 Kod realizujący główną pętlę regulatora DMC zawarty w pliku \verb|main.c| przedstawia się następująco:
 
@@ -159,7 +179,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
 
 	//inicjalizacja
     static const int D = 50;
-    static float e = 0, dup[D-1], du = 0; 
+    static float e = 0, dup[D-1], du = 0;
     static int it = 0;
 
     //Parametry uzyskane z matlaba
@@ -170,16 +190,16 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
     e = yzad - y;
 
     du = Ke * e;
-    
+
     //reczne odjecie iloczynu wektorow Ku i dUp
     for(it = 0; it < D-1; it++)
       du -= Ku[it] * dup[it];
-	
+
 	//przesuniecie wektora dUp
     for(it = D-2; it >= 1; it--)
       dup[it] = dup[it - 1];
     dup[0] = du;
-	
+
 	//wyznaczenie nowego sterowania
     u = u_ + du;
     u_ = u;
@@ -195,11 +215,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
     while(HAL_UART_GetState(&huart) == HAL_UART_STATE_BUSY_TX);
     sprintf(text,"U=%+8.2f;Y=%+8.2f;Yzad=%+8.2f;",u,y,yzad);
     if(HAL_UART_Transmit_IT(&huart, (uint8_t*)text, 36)!= HAL_OK){
-      Error_Handler();   
+      Error_Handler();
     }
   }
 }
-\end{lstlisting} 
+\end{lstlisting}
 
 Testy konkretnych parametrów regulatora przeprowadzano z większym skokiem wartości zadanej niż w przypadku PID - pozwoliło to na lepsze zobaczenie i ocenienie różnic między konkretnymi iteracjami. Na wykresach od \ref{DMC3} do \ref{DMC8} można zobaczyć kolejne przebiegi.
 
@@ -209,7 +229,7 @@ Zwiększenie $ \lambda $ skutkowało wygładzeniem przejścia między wartościa
 
 Zmiana wartości horyzontu sterowania skutkowała bardzo niewielkimi zmianami. Zdecydowano się na wartość niższą niż początkowa, jako skutkująca nieznacznie mniejszym przeregulowaniem.
 
-Zmiana wartości horyzontu predykcji również skutkowała prawie niewidocznymi zmianami - zmniejszenie jego wartości skutkowało względnym wygładzeniem przebiegu, ale też nieznacznie zwiększała przeregulowanie. Do testów porównawczych z PID wybrano regulator z rysunku \ref{DMC6}, o wartości $ N = D = 50 $.
+Zmiana wartości horyzontu predykcji również skutkowała prawie niewidocznymi zmianami --- zmniejszenie jego wartości skutkowało względnym wygładzeniem przebiegu, ale też nieznacznie zwiększała przeregulowanie. Do testów porównawczych z PID wybrano regulator z rysunku \ref{DMC6}, o wartości $ N = D = 50 $.
 
 \begin{figure}[H]
 \centering
@@ -228,14 +248,14 @@ Zmiana wartości horyzontu predykcji również skutkowała prawie niewidocznymi 
 \begin{figure}[H]
 \centering
 \input{im/DMC2_3.tex}
-\caption{$ D = 50 $, $  N = 50 $, $ Nu = 50 $, $ \lambda = 0,2 $ - oscylacje}
+\caption{$ D = 50 $, $  N = 50 $, $ Nu = 50 $, $ \lambda = 0,2 $ --- oscylacje}
 \label{DMC5}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \input{im/DMC2_4.tex}
-\caption{$ D = 50 $, $  N = 50 $, $ Nu = 10 $, $ \lambda = 0,5 $ - najlepszy z uzyskanych regulatorów}
+\caption{$ D = 50 $, $  N = 50 $, $ Nu = 10 $, $ \lambda = 0,5 $ --- najlepszy z uzyskanych regulatorów}
 \label{DMC6}
 \end{figure}
 
@@ -254,35 +274,48 @@ Zmiana wartości horyzontu predykcji również skutkowała prawie niewidocznymi 
 \end{figure}
 
 \chapter{Porównanie najlepszych realizacji}
-
-%TODO
+Dla porównania najlepszych realizacji obu regulatorów wybrano skok wartości zadanej, który w subiektywnej ocenie nie ma nazbyt wysokiego stosunku szumu do sygnału, ale jednocześnie nadal pozwala zaobserwować wpływ szumu na jakość regulacji. Najpierw dla nowego skoku sprawdzono wpływ algorytmu ``anti-windup'' na jakość regulacji. Na podstawie wartości wskaźnika jakości regulacji trudno było zdecydować pomiędzy realizacją bez algorytmu ``anti-windup'' (rys.\ref{PID1}) oraz realizacją z $T_\mathrm{v}=20$ ze względu na bardzo zbliżone wartości wskaźnika. Jednakże ze względu na subiektywnie lepsze reakcje na wprowadzane zakłócenia wybrano ostatecznie realizację z $T_\mathrm{v}=20$.
 
 \begin{figure}[H]
 \centering
 \input{im/PID_kon_1.tex}
+\label{PID1}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \input{im/PID_kon_2.tex}
+\label{PID2}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \input{im/PID_kon_3.tex}
+\label{PID3}
 \end{figure}
 
+Najlepsza realizacja algorytmu DMC pozostała ta sama jak w poprzednim podpunkcie.
+
+\begin{figure}[H]
+\centering
+\input{im/DMC2_4.tex}
+\caption{$ D = 50 $, $  N = 50 $, $ Nu = 10 $, $ \lambda = 0,5 $ --- najlepszy z uzyskanych regulatorów DMC}
+\label{DMC6}
+\end{figure}
+
+Ostatecznie dla obu algorytmów sprawdzono wpływ zakłóceń wprowadzanych poprzez wciśnięcie odpowiedniego przycisku na płytce obiektu, wyniki regulacji przedstawiono poniżej.
 
 \begin{figure}[H]
 \centering
 \input{im/PID_best_noise.tex}
+\label{PIDbest}
 \end{figure}
-
 
 \begin{figure}[H]
 \centering
 \input{im/DMC_best_noise.tex}
+\label{DMCbest}
 \end{figure}
 
-
+Na podstawie wszystkich zebranych danych możemy zauważyć, że dla algorytmu PID udało nam się uzyskać mniejsze przesterowanie, niższy czas ustalenia oraz większą odporność na duże skoki zakłócenia, jednakże przebiegi dla algorytmu DMC są wyraźnie bardziej odporne na stały szum widoczny we wszystkich przebiegach. Tym samym wybór regulatora zależałby wyraźnie od przewidywanych zastosowań.
 

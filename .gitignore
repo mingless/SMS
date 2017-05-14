@@ -1,0 +1,10 @@
+*.*~
+*.log
+*.aux
+*.toc
+*.pdf
+*.swp
+*.asv
+*.synctex.gz
+*/m2t/
+report/szablon/
