@@ -345,6 +345,8 @@ Zmiana wartości horyzontu predykcji również skutkowała prawie niewidocznymi 
 \chapter{Porównanie najlepszych realizacji}
 Dla porównania najlepszych realizacji obu regulatorów wybrano skok wartości zadanej, który w subiektywnej ocenie nie ma nazbyt wysokiego stosunku szumu do sygnału, ale jednocześnie nadal pozwala zaobserwować wpływ szumu na jakość regulacji. Najpierw dla nowego skoku sprawdzono wpływ algorytmu ``anti-windup'' na jakość regulacji. Na podstawie wartości wskaźnika jakości regulacji trudno było zdecydować pomiędzy realizacją bez algorytmu ``anti-windup'' (rys.\ref{PID1}) oraz realizacją z $T_\mathrm{v}=20$ ze względu na bardzo zbliżone wartości wskaźnika. Jednakże ze względu na subiektywnie lepsze reakcje na wprowadzane zakłócenia wybrano ostatecznie realizację z $T_\mathrm{v}=20$.
 
+Najlepsza realizacja algorytmu DMC pozostała ta sama jak w poprzednim podpunkcie.
+
 \begin{figure}[H]
 \centering
 \input{im/PID_kon_1.tex}
@@ -366,16 +368,16 @@ Dla porównania najlepszych realizacji obu regulatorów wybrano skok wartości z
 \label{PID3}
 \end{figure}
 
-Najlepsza realizacja algorytmu DMC pozostała ta sama jak w poprzednim podpunkcie.
-
 \begin{figure}[H]
 \centering
 \input{im/DMC2_4.tex}
-\caption{$ D = 50 $, $  N = 50 $, $ Nu = 10 $, $ \lambda = 0,5 $ --- najlepszy z uzyskanych regulatorów DMC}
+\caption{Regulator DMC dla $ D = 50 $, $  N = 50 $, $ Nu = 10 $, $ \lambda = 0,5 $}
 \label{DMC6_2}
 \end{figure}
 
 Ostatecznie dla obu algorytmów sprawdzono wpływ zakłóceń wprowadzanych poprzez wciśnięcie odpowiedniego przycisku na płytce obiektu, wyniki regulacji przedstawiono poniżej.
+
+Na podstawie wszystkich zebranych danych możemy zauważyć, że dla algorytmu PID udało nam się uzyskać mniejsze przesterowanie, niższy czas ustalenia oraz większą odporność na duże skoki zakłócenia, jednakże przebiegi dla algorytmu DMC są wyraźnie bardziej odporne na stały szum widoczny we wszystkich przebiegach. Tym samym wybór regulatora zależałby wyraźnie od przewidywanych zastosowań.
 
 \begin{figure}[H]
 \centering
@@ -387,8 +389,7 @@ Ostatecznie dla obu algorytmów sprawdzono wpływ zakłóceń wprowadzanych popr
 \begin{figure}[H]
 \centering
 \input{im/DMC_best_noise.tex}
+\caption{Odpowiedź na zakłócenia regulatora DMC dla $ D = 50 $, $  N = 50 $, $ Nu = 10 $, $ \lambda = 0,5 $}
 \label{DMCbest}
 \end{figure}
-
-Na podstawie wszystkich zebranych danych możemy zauważyć, że dla algorytmu PID udało nam się uzyskać mniejsze przesterowanie, niższy czas ustalenia oraz większą odporność na duże skoki zakłócenia, jednakże przebiegi dla algorytmu DMC są wyraźnie bardziej odporne na stały szum widoczny we wszystkich przebiegach. Tym samym wybór regulatora zależałby wyraźnie od przewidywanych zastosowań.
 
