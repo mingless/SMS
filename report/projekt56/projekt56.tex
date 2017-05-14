@@ -4,6 +4,63 @@ Dla prostoty i przejrzystości sprawozdania wykorzystane zostały oznaczenia pie
 Pobieranie odpowiedzi obiektu było wykonywane za pomocą skryptu z pliku \verb|UARTRead.m|, którego to zawartość była nieznacznie zmieniana w razie potrzeby dla aktualnie robionego podpunktu.
 
 \chapter{Algorytm PID}
+Przed szczegółowym omówieniem poszczególnych metod przedstawiony zostanie fragment kodu definiujący wykorzystywany regulator PID. Regulator został od razu zaimplementowany wraz z członem odpowiedzialnym za algorytm ``anti-windup'' i w regulatorach, które go nie wykorzystywały był on wyłączany poprzez zadanie wartości $T_\mathrm{v}=100000000$ co było efektywnie równoznaczne z jego wyzerowaniem.
+
+\begin{lstlisting}[language=C]
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
+  if(htim->Instance == TIM2){
+  	static float y = 0.0f;
+  	static float u = 0.0f, u_ = 0.0f;
+
+  static float yzad = 0.0f;
+  	static int iter = 0;
+  	if (++iter > 150) {
+  		//yzad = rand() % 4096 - 2048;
+  		yzad  = 0 - yzad;
+  		iter = 0;
+  	}
+
+  y = (input-2048.0f); // przejscie z 0 - 4095 do -2048 - 2047
+
+  static float up = 0.0f, ui = 0.0f;
+  static float ui_ = 0.0f, ud = 0.0f, uv = 0.0f;
+  static float e0 = 0.0f, e1 = 0.0f;
+  static float K = 12.5, Td = 0.05f, Ti = 5.f;
+  static float T = 0.05f, Tv = 10.0f;
+
+  e1 = e0;
+  e0 = yzad - y;
+
+  up = K*e0;
+  ui = ui_ + K/Ti*T*(e1 + e0)/2 + T/Tv*(uv - u_);
+  ui_ = ui;
+  ud = K*Td*(e0 - e1)/T;
+
+  u = up + ui + ud;
+  u_ = u;
+
+  if(u >  2047.0f) u =  2047.0f;
+  if(u < -2048.0f) u = -2048.0f;
+
+  uv = u;
+
+  output = u+2048.0f; // przejscie z -2048 - 2047 do 0 - 4095
+
+  updateControlSignalValue(output);
+
+  while(HAL_UART_GetState(&huart) == HAL_UART_STATE_BUSY_TX);
+  sprintf(text,"U=%+8.2f;Y=%+8.2f;Yzad=%+8.2f;",u,y,yzad);
+  if(HAL_UART_Transmit_IT(&huart,(uint8_t*)text, 36)!=HAL_OK){
+  	Error_Handler();
+  }
+  } else if (htim->Instance == TIM3){
+  } else if (htim->Instance == TIM4){
+  } else if (htim->Instance == TIM5){
+  }
+}
+
+
+\end{lstlisting}
 
 \section{Metoda Zieglera-Nicholsa}
 Wyznaczenie nastaw metodą Zieglera-Nicholsa rozpoczęto dobraniem wzmocnienia K regulatora P tak aby uzyskać niegasnące oscylacje krytyczne. Uzyskane oscylacje przedstawiono na rys. \ref{R1}, uzyskano je dla wzmocnienia krytycznego $K_u = 25$, a ich okres to po zaokrągleniu $T_u = 0.4$. Na podstawie tych wartości oraz wartości z tabelki zamieszczonej w skrypcie dla regulatora PID otrzymujemy regulator, którego działanie przedstawiono na rys. \ref{R2}.
@@ -13,75 +70,75 @@ Warto tu także wspomnieć, że obserwowane oscylacje krytyczne nie mają stałe
 \begin{figure}[H]
 \centering
 \input{im/PID_osc_kryt.tex}
-\label{R1}
 \caption{Regulator P dla $K = 25$, $T_\mathrm{D} = 0$, $T_\mathrm{I} = 100000000$, $T = 0.05$, $T_\mathrm{v} = 100000000$}
+\label{R1}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \input{im/PID_1.tex}
-\label{R2}
 \caption{Regulator PID dla $K = 15$, $T_\mathrm{D} = 0.05$, $T_\mathrm{I} = 0.2$, $T = 0.05$, $T_\mathrm{v} = 100000000$}
+\label{R2}
 \end{figure}
 
 \section{Metoda ``inżynierska''}
-Wyznaczenie nastaw metodą ``inżynierską'' zaczyna się od tego samego regulatora P co w poprzedniej sekcji, stąd nie ma potrzeby ponownego wyznaczania wzmocnienia krytycznego. W następnym dobierany jest parametr $T_\mathrm{I}$ regulatora PI, zaś wzmocnienie ustawia się jako $K = \num{0.5}K_u$. Jako kryterium doboru parametru $T_\mathrm{I}$ początkowo wybrano minimalny czas ustalenia sygnału wyjściowego jednakże ze względu na późniejsze przebiegi późniejszych regulatorów PID wybór ten został zmieniony i zamiast $T_\mathrm{I} = 6$ wybrano $T_\mathrm{I} = 5$. Tym samym rozpoczęto dobór parametru $T_\mathrm{D}$. Parametr ten dobierany był na podstawie miary błędu średniokwadratowego wartości wyjścia do wartości zadanej. Warto tu także zauważyć, że aby uniknąć ``obijania'' się o ograniczenia dobór nastaw przeprowadzany był dla bardzo niskiej wartości zadanej co wiązało się z istotnym szumem, stąd też pod uwagę brana była także subiektywna ocena jakości przebiegu ze względu na niepewność wskaźnika jakości. Ostateczne nastawy zostaną jeszcze później sprawdzone dla skoków wartości zadanej o większej amplitudzie. Przebiegi dla kolejnych regulatorów wraz z ich parametrami zamieszczono na rys. (\ref{3}--\ref{10}).
+Wyznaczenie nastaw metodą ``inżynierską'' zaczyna się od tego samego regulatora P co w poprzedniej sekcji, stąd nie ma potrzeby ponownego wyznaczania wzmocnienia krytycznego. W następnym dobierany jest parametr $T_\mathrm{I}$ regulatora PI, zaś wzmocnienie ustawia się jako $K = \num{0.5}K_u$. Jako kryterium doboru parametru $T_\mathrm{I}$ początkowo wybrano minimalny czas ustalenia sygnału wyjściowego jednakże ze względu na późniejsze przebiegi późniejszych regulatorów PID wybór ten został zmieniony i zamiast $T_\mathrm{I} = 6$ wybrano $T_\mathrm{I} = 5$. Tym samym rozpoczęto dobór parametru $T_\mathrm{D}$. Parametr ten dobierany był na podstawie subiektywnej oceny jakości regulacji oraz obserwacji wartości liczbowych. Warto tu także zauważyć, że aby uniknąć ``obijania'' się o ograniczenia dobór nastaw przeprowadzany był dla bardzo niskiej wartości zadanej co wiązało się z istotnym szumem, stąd też ze względu na niepewność wskaźnika jakości był on obliczany jedynie w kwestiach spornych i brany pod uwagę jako jeden z wielu parametrów. Ostateczne nastawy zostaną jeszcze później sprawdzone dla skoków wartości zadanej o większej amplitudzie. Przebiegi dla kolejnych regulatorów wraz z ich parametrami zamieszczono na rys. (\ref{R3}--\ref{R10}).
 
 \begin{figure}[H]
 \centering
 \input{im/PI_inz_1.tex}
-\label{R3}
 \caption{Regulator PID dla $K = 12.5$, $T_\mathrm{D} = 0$, $T_\mathrm{I} = 5$, $T = 0.05$, $T_\mathrm{v} = 100000000$}
+\label{R3}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \input{im/PI_inz_2.tex}
-\label{R4}
 \caption{Regulator PID dla $K = 12.5$, $T_\mathrm{D} = 0$, $T_\mathrm{I} = 6$, $T = 0.05$, $T_\mathrm{v} = 100000000$}
+\label{R4}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \input{im/PI_inz_3.tex}
-\label{R5}
 \caption{Regulator PID dla $K = 12.5$, $T_\mathrm{D} = 0$, $T_\mathrm{I} = 0.1$, $T = 0.05$, $T_\mathrm{v} = 100000000$}
+\label{R5}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \input{im/PI_inz_4.tex}
-\label{R6}
 \caption{Regulator PID dla $K = 12.5$, $T_\mathrm{D} = 0$, $T_\mathrm{I} = 0.4$, $T = 0.05$, $T_\mathrm{v} = 100000000$}
+\label{R6}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \input{im/PI_inz_5.tex}
-\label{R7}
 \caption{Regulator PID dla $K = 12.5$, $T_\mathrm{D} = 0$, $T_\mathrm{I} = 0.8$, $T = 0.05$, $T_\mathrm{v} = 100000000$}
+\label{R7}
 \end{figure}
 
 
 \begin{figure}[H]
 \centering
 \input{im/PID_inz_1.tex}
-\label{R8}
 \caption{Regulator PID dla $K = 12.5$, $T_\mathrm{D} = 0.1$, $T_\mathrm{I} = 5$, $T = 0.05$, $T_\mathrm{v} = 100000000$}
+\label{R8}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \input{im/PID_inz_2.tex}
-\label{R9}
 \caption{Regulator PID dla $K = 12.5$, $T_\mathrm{D} = 0.3$, $T_\mathrm{I} = 5$, $T = 0.05$, $T_\mathrm{v} = 100000000$}
+\label{R9}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \input{im/PID_inz_3.tex}
-\label{R10}
 \caption{Regulator PID dla $K = 12.5$, $T_\mathrm{D} = 0.05$, $T_\mathrm{I} = 5$, $T = 0.05$, $T_\mathrm{v} = 100000000$}
+\label{R10}
 \end{figure}
 
 \section{Algorytm \textit{anti-windup}}
@@ -92,15 +149,15 @@ Po konsultacji z prowadzącym przeprowadzono eksperymenty wpływu algorytmu na t
 \begin{figure}[H]
 \centering
 \input{im/PID_aw.tex}
-\label{R11}
 \caption{Regulator PID dla $K = 15$, $T_\mathrm{D} = 0.05$, $T_\mathrm{I} = 0.2$, $T = 0.05$, $T_\mathrm{v} = 10$}
+\label{R11}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \input{im/PID_aw_2.tex}
-\label{R12}
 \caption{Regulator PID dla $K = 15$, $T_\mathrm{D} = 0.05$, $T_\mathrm{I} = 0.2$, $T = 0.05$, $T_\mathrm{v} = 20$}
+\label{R12}
 \end{figure}
 
 
@@ -291,22 +348,22 @@ Dla porównania najlepszych realizacji obu regulatorów wybrano skok wartości z
 \begin{figure}[H]
 \centering
 \input{im/PID_kon_1.tex}
-\label{PID1}
 \caption{Regulator PID dla $K = 15$, $T_\mathrm{D} = 0.05$, $T_\mathrm{I} = 0.2$, $T = 0.05$, $T_\mathrm{v} = 100000000$}
+\label{PID1}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \input{im/PID_kon_2.tex}
-\label{PID2}
 \caption{Regulator PID dla $K = 15$, $T_\mathrm{D} = 0.05$, $T_\mathrm{I} = 0.2$, $T = 0.05$, $T_\mathrm{v} = 10$}
+\label{PID2}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \input{im/PID_kon_3.tex}
-\label{PID3}
 \caption{Regulator PID dla $K = 15$, $T_\mathrm{D} = 0.05$, $T_\mathrm{I} = 0.2$, $T = 0.05$, $T_\mathrm{v} = 20$}
+\label{PID3}
 \end{figure}
 
 Najlepsza realizacja algorytmu DMC pozostała ta sama jak w poprzednim podpunkcie.
@@ -315,7 +372,7 @@ Najlepsza realizacja algorytmu DMC pozostała ta sama jak w poprzednim podpunkci
 \centering
 \input{im/DMC2_4.tex}
 \caption{$ D = 50 $, $  N = 50 $, $ Nu = 10 $, $ \lambda = 0,5 $ --- najlepszy z uzyskanych regulatorów DMC}
-\label{DMC6}
+\label{DMC6_2}
 \end{figure}
 
 Ostatecznie dla obu algorytmów sprawdzono wpływ zakłóceń wprowadzanych poprzez wciśnięcie odpowiedniego przycisku na płytce obiektu, wyniki regulacji przedstawiono poniżej.
@@ -323,8 +380,8 @@ Ostatecznie dla obu algorytmów sprawdzono wpływ zakłóceń wprowadzanych popr
 \begin{figure}[H]
 \centering
 \input{im/PID_best_noise.tex}
-\label{PIDbest}
 \caption{Odpowiedź na zakłócenia regulatora PID dla $K = 15$, $T_\mathrm{D} = 0.05$, $T_\mathrm{I} = 0.2$, $T = 0.05$, $T_\mathrm{v} = 20$}
+\label{PIDbest}
 \end{figure}
 
 \begin{figure}[H]
