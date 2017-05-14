@@ -1,7 +1,11 @@
 \chapter{Wstęp}
-Dla prostoty i przejrzystości sprawozdania wykorzystane zostały oznaczenia pierwotnie wprowadzone w skrypcie z przedmiotu STP\@.
+Dla prostoty i przejrzystości sprawozdania wykorzystane zostały oznaczenia pierwotnie wprowadzone w skrypcie z aktualnego laboratorium\@.
+
+Pobieranie odpowiedzi obiektu było wykonywane za pomocą skryptu z pliku \verb|UARTRead.m|, którego to zawartość była nieznacznie zmieniana w razie potrzeby dla aktualnie robionego podpunktu.
 
 \chapter{Algorytm PID}
+
+%TODO
 
 Napisać coś o różnicy w taktowaniu.
 \begin{figure}[H]
@@ -70,86 +74,188 @@ Tu wspomnieć, że P to osc kryt.
 
 \chapter{Algorytm DMC}
 
-Oba do poprawy, ręcznie.
-\begin{figure}[H]
-\centering
-\input{im/step_400.tex}
-\end{figure}
+Do implementacji cyfrowego algorytmu DMC na mikronoktrolerze oprócz plików źródłowych zastosowano skrypt z MATLABa wykonujący niezbędne przekształcenia uzyskanej odpowiedzi skokowej i zadanych parametrów na użyteczne wartości.
 
-\begin{figure}[H]
-\centering
-\input{im/step.tex}
-\end{figure}
+Odpowiedź skokową uzyskano poprzez zmierzenie odpowiedzi układu na skok sygnału wejściowego o 400, jak pokazano na rysunku \ref{DMC1}. Obcięta odpowiedź, stosowana w samych obliczeniach (przed normalizacją do skoku jednostkowego z punktu pracy), została przedstawiona na rysunku \ref{DMC2}.
 
 
 \begin{figure}[H]
-\centering
-\input{im/DMC_1.tex}
+	\centering
+	\input{im/step_400.tex}
+	\caption{Odpowiedź skokowa układu}
+	\label{DMC1}
 \end{figure}
 
 \begin{figure}[H]
-\centering
-\input{im/DMC_2.tex}
+	\centering
+	\input{im/step.tex}
+	\caption{Obcięta odpowiedź skokowa układu}
+	\label{DMC2}
 \end{figure}
 
-\begin{figure}[H]
-\centering
-\input{im/DMC_3_fail.tex}
-\end{figure}
+Skrypt, którego użyto do wyliczenia macierzy DMC zawarto w pliku \verb|params.m|:
 
-\begin{figure}[H]
-\centering
-\input{im/DMC_4.tex}
-\end{figure}
+\begin{lstlisting}[style=Matlab-editor]
+Ypp = 50;
+dU = 400;
+D = ?; %parametry - zmieniane w kolejnych probach
+N = ?;
+Nu = ?;
+lambda = ?;
 
-\begin{figure}[H]
-\centering
-\input{im/DMC_5_fail.tex}
-\end{figure}
+load step.mat %zaladowanie pliku z odpowiedzia skokowa
+s = (s - Ypp)/dU;
 
-\begin{figure}[H]
-\centering
-\input{im/DMC_6_fail.tex}
-\end{figure}
 
-\begin{figure}[H]
-\centering
-\input{im/DMC_7_fail.tex}
-\end{figure}
+M=zeros(N,Nu);
+for i=1:N
+  for j=1:Nu
+    if (i>=j)
+      M(i,j)=s(i-j+1);
+    end;
+  end;
+end;
 
+Mp=zeros(N,D-1);
+for i=1:N
+  for j=1:D-1
+    if i+j<=D
+      Mp(i,j)=s(i+j)-s(j);
+    else
+      Mp(i,j)=s(D)-s(j);
+    end;      
+  end;
+end;
+
+K=((M'*M+lambda*eye(Nu))^-1)*M';
+Ku=K(1,:)*Mp;
+Ke=sum(K(1,:));
+
+
+%wypisanie odpowiednio sformatowanego przypisania w C
+fprintf(strcat('  static float Ke = ',sprintf('%.4f',Ke),';\n',...
+'  static float Ku[] = {',sprintf('%.4f,',Ku),'\b};\n'));
+
+\end{lstlisting} 
+
+Kod realizujący główną pętlę regulatora DMC zawarty w pliku \verb|main.c| przedstawia się następująco:
+
+\begin{lstlisting}[language=C]
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
+  if(htim->Instance == TIM2){
+    static float y = 0.0f;
+    static float u = 0.0f, u_ = 0.0f; //u_ = u(k-1), u = u(k)
+
+    static float yzad = 0.0f;
+    static int iter = 0;
+    if (++iter > 150) {
+      //yzad = rand() % 4096 - 2048;
+      yzad  = 200 - yzad; //naprzemienne skoki miedzy 0 i zadana
+      iter = 0;           //wartoscia
+    }
+
+    y = (input-2048.0f); // przejscie z 0 - 4095 do -2048 - 2047
+
+	//inicjalizacja
+    static const int D = 50;
+    static float e = 0, dup[D-1], du = 0; 
+    static int it = 0;
+
+    //Parametry uzyskane z matlaba
+    static float Ke = ??;
+    static float Ku[] = ??;
+
+
+    e = yzad - y;
+
+    du = Ke * e;
+    
+    //reczne odjecie iloczynu wektorow Ku i dUp
+    for(it = 0; it < D-1; it++)
+      du -= Ku[it] * dup[it];
+	
+	//przesuniecie wektora dUp
+    for(it = D-2; it >= 1; it--)
+      dup[it] = dup[it - 1];
+    dup[0] = du;
+	
+	//wyznaczenie nowego sterowania
+    u = u_ + du;
+    u_ = u;
+
+    if(u >  2047.0f) u =  2047.0f; %limity
+    if(u < -2048.0f) u = -2048.0f;
+
+
+    output = u+2048.0f; // przejscie z -2048 - 2047 do 0 - 4095
+
+    updateControlSignalValue(output);
+
+    while(HAL_UART_GetState(&huart) == HAL_UART_STATE_BUSY_TX);
+    sprintf(text,"U=%+8.2f;Y=%+8.2f;Yzad=%+8.2f;",u,y,yzad);
+    if(HAL_UART_Transmit_IT(&huart, (uint8_t*)text, 36)!= HAL_OK){
+      Error_Handler();   
+    }
+  }
+}
+\end{lstlisting} 
+
+Testy konkretnych parametrów regulatora przeprowadzano z większym skokiem wartości zadanej niż w przypadku PID - pozwoliło to na lepsze zobaczenie i ocenienie różnic między konkretnymi iteracjami. Na wykresach od \ref{DMC3} do \ref{DMC8} można zobaczyć kolejne przebiegi.
+
+Zgodnie z kolejnością podpunktów w skrypcie do laboratorium, najpierw dobierano jeden parametr, a następnie dla najlepszej jego wartości wybierano następny. Ich kolejność $ \lambda $, następnie $ N_\mathrm{u} $, a na końcu $ N $. Parametr $ D $ dobrano na podstawie stabilizacji odpowiedzi skokowej.
+
+Zwiększenie $ \lambda $ skutkowało wygładzeniem przejścia między wartościami przed i po skokiem. Zmniejszenie jej powodowało przyspieszenie tego przejścia - aż do pewnej wartości minimalnej, po której przy której pojawiały się oscylacje. Końcowa wartość to $ 0,5 $.
+
+Zmiana wartości horyzontu sterowania skutkowała bardzo niewielkimi zmianami. Zdecydowano się na wartość niższą niż początkowa, jako skutkująca nieznacznie mniejszym przeregulowaniem.
+
+Zmiana wartości horyzontu predykcji również skutkowała prawie niewidocznymi zmianami - zmniejszenie jego wartości skutkowało względnym wygładzeniem przebiegu, ale też nieznacznie zwiększała przeregulowanie. Do testów porównawczych z PID wybrano regulator z rysunku \ref{DMC6}, o wartości $ N = D = 50 $.
 
 \begin{figure}[H]
 \centering
 \input{im/DMC2_1.tex}
+\caption{$ D = 50 $, $  N = 50 $, $ Nu = 50 $, $ \lambda = 1 $}
+\label{DMC3}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \input{im/DMC2_2.tex}
+\caption{$ D = 50 $, $  N = 50 $, $ Nu = 50 $, $ \lambda = 0,5 $}
+\label{DMC4}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \input{im/DMC2_3.tex}
+\caption{$ D = 50 $, $  N = 50 $, $ Nu = 50 $, $ \lambda = 0,2 $ - oscylacje}
+\label{DMC5}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \input{im/DMC2_4.tex}
+\caption{$ D = 50 $, $  N = 50 $, $ Nu = 10 $, $ \lambda = 0,5 $ - najlepszy z uzyskanych regulatorów}
+\label{DMC6}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \input{im/DMC2_6.tex}
+\caption{$ D = 50 $, $  N = 20 $, $ Nu = 10 $, $ \lambda = 0,5 $}
+\label{DMC7}
 \end{figure}
 
 \begin{figure}[H]
 \centering
 \input{im/DMC2_7.tex}
+\caption{$ D = 50 $, $  N = 30 $, $ Nu = 10 $, $ \lambda = 0,5 $}
+\label{DMC8}
 \end{figure}
 
 \chapter{Porównanie najlepszych realizacji}
 
+%TODO
 
 \begin{figure}[H]
 \centering
@@ -179,18 +285,4 @@ Oba do poprawy, ręcznie.
 \end{figure}
 
 
-
-\begin{equation}
-\end{equation}
-
-
-\begin{lstlisting}[style=Matlab-editor]
-s = tf('s');
-
-sys = K/((s*T1+1)*(s*T2+1))*exp(-Td*s);
-% wartości T1, T2 oraz Td otrzymano podczas optymalizacji
-% parametrów modelu wykorzystanego przy aproksymacji
-
-pidtune(sys,'PID');
-\end{lstlisting} 
 

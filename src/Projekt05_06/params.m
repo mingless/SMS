@@ -1,4 +1,4 @@
-Ypp = 0;
+Ypp = 50;
 dU = 400;
 D = 50;
 N = 30;
@@ -16,9 +16,6 @@ lambda = 0.5;
 load step.mat
 s = (s - Ypp)/dU;
 
-for i=1:D-1
-   dup(i)=0;
-end
 
 M=zeros(N,Nu);
 for i=1:N
