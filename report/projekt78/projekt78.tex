@@ -1,7 +1,36 @@
 \chapter{Wstęp}
-W czasie ćwiczenia ... // tu przydałoby się kilka słów wstępu, ale jakoś nie mam weny
+Dla prostoty i przejrzystości sprawozdania wykorzystane zostały oznaczenia pierwotnie wprowadzone w skrypcie z laboratorium\@.
 
-\chapter{Implementacja algorytmu DMC}
+\chapter{Algorytm DMC}
+
+Aby zaimplementować algorytm DMC wstępnie pobrano odpowiedź skokową regulowanego obiektu. Wykonano skok sterowania od 30\% do 50\% i wynikowy przebieg temperatury wyjściowej przedstawiono na rysunku \ref{step}.
+
+\begin{figure}[H]
+	\centering
+	\input{im/step.tex}
+	\caption{Odpowiedź skokowa układu}
+	\label{step}
+\end{figure}
+
+Sama implementacja algorytmu jest praktycznie identyczna jak w poprzednim laboratorium, opisywanie jej szczegółów zostanie więc pominięte. Tak jak ostatnio, niezbędne parametry do regulacji wyznaczono korzystając ze skryptu \verb|params.m| w MATLABie, po czym skopiowano je do pliku źródłowego \verb|main.c| w miejscu wykonywania głównej pętli regulacji.
+
+Na podstawie czasu stabilizacji odpowiedzi skokowej wyznaczono wstępnie parametr $ D = 300 $, a następnie ustalono $ N $ i $ N_\mathrm{u} $ na równe $ D $ jako teoretycznie optymalne. Przy tych wstępnych parametrach przetestowano dwie różne wartości $ \lambda $ i porównano ich przebiegi (rys. \ref{DMC1} i \ref{DMC2}) ze sobą. Odpowiedź o $ \lambda $ mniejszej zdaje się być lepsza, choć możliwy jest wpływ różnych zakłóceń na uzyskane przebiegi.
+
+
+\begin{figure}[ht]
+\centering
+\input{im/DMC1.tex}
+\caption{Regulacja z zastosowaniem parametru $ \lambda=1 $.}
+\label{DMC1}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\input{im/DMC04.tex}
+\caption{Regulacja z zastosowaniem parametru $ \lambda=\num{0,4} $.}
+\label{DMC2}
+\end{figure}
+
 
 \chapter{Interfejs użytkownika}
 Tworzenie interfejsu rozpoczęliśmy od ustalenia ogólnego układu graficznego. Zdecydowaliśmy się podzielić wyświetlacz na dwie części, z lewej strony wyświatlane są dane dotyczące procesu, a z prawej intuicyjne ``lampki'' sygnalizujące status układu. Poniżej zaprezentowano zdjęcie układu w stanie prawidłowej pracy i z regulacją DMC.
@@ -15,6 +44,7 @@ Tworzenie interfejsu rozpoczęliśmy od ustalenia ogólnego układu graficznego.
 
 
 Jako sytuację alarmową przyjęto sytuację, w której temperatura T1 znajdzie się poza zakresem od 30 do 50 stopni Celsjusza. Poniżej zaprezentowano wystąpienie takiej sytuacji po ustawieniu temperatury zadanej powyżej tego zakresu. Jest ona wyraźnie sygnalizowana w polu statusu poprzez zmianę ``lampki'' temperatury oraz jej opisu, gdy temperatura jest za wysoka kolor zmienia się na czerwony, a napis na ``T WYSOKA'', gdy temperatura spadnie poniżej 30 stopni ``lampka'' zmieni kolor na niebieski, a napis zmieni się na ``T NISKA''.
+
 
 \begin{figure}[ht]
 \centering
