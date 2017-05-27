@@ -36,19 +36,19 @@ Na podstawie czasu stabilizacji odpowiedzi skokowej wyznaczono wstępnie paramet
 Tworzenie interfejsu rozpoczęliśmy od ustalenia ogólnego układu graficznego. Zdecydowaliśmy się podzielić wyświetlacz na dwie części, z lewej strony wyświatlane są dane dotyczące procesu, a z prawej intuicyjne ``lampki'' sygnalizujące status układu. Poniżej zaprezentowano zdjęcie układu w stanie prawidłowej pracy i z regulacją DMC.
 
 
-\begin{figure}[ht]
+\begin{figure}[H]
 \centering
-\includegraphic{4.jpg}
+\includegraphics[width=\textwidth]{im/4.jpg}
 \label{R4}
 \end{figure}
 
 
-Jako sytuację alarmową przyjęto sytuację, w której temperatura T1 znajdzie się poza zakresem od 30 do 50 stopni Celsjusza. Poniżej zaprezentowano wystąpienie takiej sytuacji po ustawieniu temperatury zadanej powyżej tego zakresu. Jest ona wyraźnie sygnalizowana w polu statusu poprzez zmianę ``lampki'' temperatury oraz jej opisu, gdy temperatura jest za wysoka kolor zmienia się na czerwony, a napis na ``T WYSOKA'', gdy temperatura spadnie poniżej 30 stopni ``lampka'' zmieni kolor na niebieski, a napis zmieni się na ``T NISKA''.
+Jako sytuację alarmową przyjęto sytuację, w której temperatura T1 znajdzie się poza zakresem od 30 do 50 stopni Celsjusza. Poniżej zaprezentowano wystąpienie takiej sytuacji po ustawieniu temperatury zadanej powyżej tego zakresu. Jest ona wyraźnie sygnalizowana w polu statusu poprzez zmianę ``lampki'' temperatury oraz jej opisu. Gdy temperatura jest za wysoka kolor zmienia się na czerwony, a napis na ``T WYSOKA'', a gdy spadnie poniżej 30 stopni, kolor zmieni się na niebieski, a napis na ``T NISKA''.
 
 
-\begin{figure}[ht]
+\begin{figure}[H]
 \centering
-\includegraphic{1.jpg}
+\includegraphics[width=\textwidth]{im/1.jpg}
 \label{R1}
 \end{figure}
 
@@ -56,36 +56,36 @@ Jako sytuację alarmową przyjęto sytuację, w której temperatura T1 znajdzie 
 Podobnie sygnalizowane jest wystąpienie błędu pomiaru.
 
 
-\begin{figure}[ht]
+\begin{figure}[H]
 \centering
-\includegraphic{3.jpg}
+\includegraphics[width=\textwidth]{im/3.jpg}
 \label{R3}
 \end{figure}
 
 
-Układ operuje w dwóch trybach: DMC i manualnym, przejście między trybami odbywa się poprzez dotknięcie napisu sygnalizującego obecny stan, wyświetla on odpowiednio napisy ``DMC'' i ``MAN''.
+Układ operuje w dwóch trybach: DMC i manualnym, przejście między trybami odbywa się poprzez dotknięcie napisu sygnalizującego obecny stan, wyświetla on odpowiednio napisy ``DMC'' i ``MAN''. W trybie manualnym wciskanie plusa i minusa na prawo od słupka G1 powoduje zmianę wartości sterowania grzałki.
 
 
-\begin{figure}[ht]
+\begin{figure}[H]
 \centering
-\includegraphic{2.jpg}
+\includegraphics[width=\textwidth]{im/2.jpg}
 \label{R2}
 \end{figure}
 
 
-Ponieważ wystąpienie błędu w komunikacji sygnalizuje poważny problem --- zgodnie z zaleceniem --- sygnalizujemy go poprzez wyświetlenie dużego napisu na czerwonym tle. Jeżeli problem zniknie samoczynnie to dla informacji operatora układ wyświetla wszystkie dane na czerwonym tle i informuje napisem o wystąpieniu błędu.
+Ponieważ wystąpienie błędu w komunikacji sygnalizuje poważny problem --- zgodnie z zaleceniem --- sygnalizujemy go poprzez wyświetlenie dużego napisu na czerwonym tle. Jeżeli problem zniknie samoczynnie to dla informacji operatora układ wyświetla wszystkie dane na czerwonym tle i informuje napisem o wystąpieniu błędu, aż do zrestartowania przez niego całego systemu.
 
 
-\begin{figure}[ht]
+\begin{figure}[H]
 \centering
-\includegraphic{5.jpg}
+\includegraphics[width=\textwidth]{im/5.jpg}
 \label{R5}
 \end{figure}
 
 
-\begin{figure}[ht]
+\begin{figure}[H]
 \centering
-\includegraphic{6.jpg}
+\includegraphics[width=\textwidth]{im/6.jpg}
 \label{R6}
 \end{figure}
 
