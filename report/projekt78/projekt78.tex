@@ -12,7 +12,7 @@ Aby zaimplementować algorytm DMC wstępnie pobrano odpowiedź skokową regulowa
 	\label{step}
 \end{figure}
 
-Sama implementacja algorytmu jest praktycznie identyczna jak w poprzednim laboratorium, opisywanie jej szczegółów zostanie więc pominięte. Tak jak ostatnio, niezbędne parametry do regulacji wyznaczono korzystając ze skryptu \verb|params.m| w MATLABie, po czym skopiowano je do pliku źródłowego \verb|main.c| w miejscu wykonywania głównej pętli regulacji.
+Sama implementacja algorytmu jest praktycznie identyczna jak w poprzednim laboratorium, opisywanie jej szczegółów zostanie więc pominięte. Tak jak poprzednio, niezbędne parametry do regulacji wyznaczono korzystając ze skryptu \verb|params.m| w MATLABie, po czym skopiowano je do pliku źródłowego \verb|main.c| w miejscu wykonywania głównej pętli regulacji.
 
 Na podstawie czasu stabilizacji odpowiedzi skokowej wyznaczono wstępnie parametr $ D = 300 $, a następnie ustalono $ N $ i $ N_\mathrm{u} $ na równe $ D $ jako teoretycznie optymalne. Przy tych wstępnych parametrach przetestowano dwie różne wartości $ \lambda $ i porównano ich przebiegi (rys. \ref{DMC1} i \ref{DMC2}) ze sobą. Odpowiedź o $ \lambda $ mniejszej zdaje się być lepsza, choć możliwy jest wpływ różnych zakłóceń na uzyskane przebiegi.
 
@@ -39,6 +39,7 @@ Tworzenie interfejsu rozpoczęliśmy od ustalenia ogólnego układu graficznego.
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{im/4.jpg}
+\caption{Widok interfejsu w stanie prawidłowej pracy układu.}
 \label{R4}
 \end{figure}
 
@@ -49,6 +50,7 @@ Jako sytuację alarmową przyjęto sytuację, w której temperatura T1 znajdzie 
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{im/1.jpg}
+\caption{Widok interfejsu przy osiągnięciu wysokiej temperatury.}
 \label{R1}
 \end{figure}
 
@@ -59,6 +61,7 @@ Podobnie sygnalizowane jest wystąpienie błędu pomiaru.
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{im/3.jpg}
+\caption{Widok interfejsu przy wystąpieniu błędu pomiaru.}
 \label{R3}
 \end{figure}
 
@@ -69,6 +72,7 @@ Układ operuje w dwóch trybach: DMC i manualnym, przejście między trybami odb
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{im/2.jpg}
+\caption{Widok interfejsu w manualnym trybie pracy.}
 \label{R2}
 \end{figure}
 
@@ -79,6 +83,7 @@ Ponieważ wystąpienie błędu w komunikacji sygnalizuje poważny problem --- zg
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{im/5.jpg}
+\caption{Widok interfejsu w stanie nieprawidłowej komunikacji.}
 \label{R5}
 \end{figure}
 
@@ -86,6 +91,9 @@ Ponieważ wystąpienie błędu w komunikacji sygnalizuje poważny problem --- zg
 \begin{figure}[H]
 \centering
 \includegraphics[width=\textwidth]{im/6.jpg}
+\caption{Widok interfejsu w stanie pracy po wystąpieniu błędu w komunikacji.}
 \label{R6}
 \end{figure}
 
+
+Po wykonaniu kilku iteracji interfejsu i wprowadzeniu kolejnych poprawek wydaje nam się, że taki układ jest zarówno intuicyjny --- z daleka widać wysokości słupków oraz zmiany kolorów, łatwo też ocenić, która z lampek zmieniła kolor i odczytać jej opis --- jak i dokładny --- przy bliższym spojrzeniu można odczytać dokładne wartości sterowania czy temperatury, a także wartości zadanej. Układ pozwala także przy wykorzystaniu ekranu dotykowego na zmiany wartości zadanej oraz przejście w tryb manualny i ręczne zmiany wartości sterowania. Układ prezentuje się także bardzo dobrze ze strony estetycznej.
